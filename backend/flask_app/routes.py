@@ -1,0 +1,6 @@
+from flask_app import app
+
+
+@app.route('/', methods=['GET'])
+def hello_world():
+    return("Hello world!")
