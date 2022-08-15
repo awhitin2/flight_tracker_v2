@@ -1,4 +1,5 @@
 
+from sqlalchemy import UniqueConstraint
 from flask_app import db 
 
 user_flight = db.Table('user_flight',
@@ -18,19 +19,25 @@ class User(db.Model):
         return f'User: {self.id}, {self.cell}'
 
 class Flight(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     number = db.Column(db.String, nullable=False)
+    date_str = db.Column(db.String, nullable=False)
     airline_code = db.Column(db.String, nullable=False)
     date_str = db.Column(db.String, nullable=False)
     airline = db.Column(db.String, nullable=False)
     scheduled_departure_time = db.Column(db.String, nullable=False)
     scheduled_arrival_time = db.Column(db.String, nullable=False)
+    estimated_departure_time = db.Column(db.String, nullable=False)
     estimated_arrival_time = db.Column(db.String, nullable=False)
     arrival_airport = db.Column(db.String, nullable=False)
+    departure_airport = db.Column(db.String, nullable=False)
     arrived = db.Column(db.Boolean, nullable=True)
     followers = db.relationship(
-        'User', secondary=user_flight, back_populates = 'flights'
-    )
+        'User', secondary=user_flight, back_populates = 'flights')
+
+    UniqueConstraint(number, date_str, airline_code)
+
 
     def __repr__(self):
-        return f'Flight: {self.airline}{self.number} -- self.date'
+        return f'Flight: {self.airline_code}{self.number} -- {self.date_str}'
