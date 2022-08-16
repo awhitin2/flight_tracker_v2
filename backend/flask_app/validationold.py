@@ -5,6 +5,11 @@ import phonenumbers
 
 import tracker
 
+### You are already tracking this flight
+### Invalid flight
+### Flight is too far in the future to validate
+### Invalid Cell
+
 
 class Status(enum.Enum):
 

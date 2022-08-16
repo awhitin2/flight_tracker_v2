@@ -2,9 +2,10 @@ import datetime
 
 #Consider timezone support
 
-today = datetime.date.today()
-date_objs = [today + datetime.timedelta(days=i) for i in range(14)]
-date_strs = [date.strftime('%m/%d/%Y') for date in date_objs]
+def get_date_options():
+    today = datetime.date.today()
+    date_objs = [today + datetime.timedelta(days=i) for i in range(3)]
+    return [date.strftime('%m/%d/%Y') for date in date_objs]
 
 
 def convert_to_str(date_obj):
