@@ -131,3 +131,6 @@ dmypy.json
 # Cache
 **/.DS_Store
 **/.vscode/
+
+# Project specific
+/backend/flask_app/site.db

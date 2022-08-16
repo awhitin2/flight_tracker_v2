@@ -16,6 +16,9 @@ def get_flight(airline_code:str, number:str, date_str:str)->models.Flight:
                        .filter_by(date_str=date_str)\
                        .first()
 
+def get_all_flights()->list[models.Flight]:
+    return models.Flight.query.all()
+
 def set_flight(
     flight_number: str, airline_code: str, date_str: str, flight_info: dict
     )->models.Flight:
@@ -28,8 +31,14 @@ def set_flight(
             # arrived = flight_info['arrived_status']
             )
 
+def update_flight(flight: models.Flight, changes: dict[dict[str:str]])->None:
+    for key, value in changes.items():
+        setattr(flight, key, value['updated'])
+    db.session.commit()
+
 def get_user_(cell:str)->models.User:
     return models.User.query.filter_by(cell=cell).first()
 
 def set_user(cell:str, carrier:str)->models.User:
     return models.User(cell = cell, carrier = carrier)
+
