@@ -10,7 +10,7 @@
 ## Boarding/departure
 ## Arrival
 
-from flask_app import tracker, models, exceptions
+from flask_app import tracker, models, exceptions, messenger
 from flask_app import database as my_db
 
 
@@ -46,8 +46,9 @@ def _compare_info(old_info: models.Flight, updated_info: dict[dict[str:str]])->d
     return changes
 
 def _process_changes(flight: models.Flight, changes: dict[dict[str:str]]):
+    messenger.send_t_update(flight, changes)
     # my_db.update_flight(flight, changes)
-    #Send messages
+    
     #Update database
     #Delete old records
 
@@ -58,3 +59,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+# messenger.send_update_sms(flight.followers, flight, changes)

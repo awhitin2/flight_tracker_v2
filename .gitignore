@@ -133,4 +133,5 @@ dmypy.json
 **/.vscode/
 
 # Project specific
-/backend/flask_app/site.db
+backend/flask_app/site.db
+backend/email_credentials.py

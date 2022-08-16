@@ -16,7 +16,7 @@ class User(db.Model):
     )
 
     def __repr__(self) -> str:
-        return f'User: {self.id}, {self.cell}'
+        return f'User: {self.cell}, {self.flights}'
 
 class Flight(db.Model):
     
@@ -40,4 +40,4 @@ class Flight(db.Model):
 
 
     def __repr__(self):
-        return f'Flight: {self.airline_code}{self.number} -- {self.date_str}'
+        return f'Flight: {self.airline_code} {self.number} -- {self.date_str}'

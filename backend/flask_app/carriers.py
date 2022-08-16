@@ -1,4 +1,4 @@
-carriers = {
+carrier_codes = {
 	'AT&T': '@mms.att.net',
 	'T-Mobile': '@tmomail.net',
 	'Verizon': '@vtext.com',

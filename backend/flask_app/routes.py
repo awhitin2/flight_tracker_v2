@@ -7,7 +7,7 @@ from flask_app import app, dates, airlines, carriers, tracker, exceptions, https
 def get_form_start_data():
     date_options = dates.get_date_options()
     airline_options = list(airlines.airline_codes)
-    carrier_options = list(carriers.carriers)
+    carrier_options = list(carriers.carrier_codes)
     return(
         {
             'carriers': carrier_options,
