@@ -8,16 +8,28 @@ yag = yagmail.SMTP(credentials.EMAIL_ACCOUNT, credentials.EMAIL_PASSWORD)
 
 
 import telegram
+bot = telegram.Bot(token=credentials.TELEGRAM_TOKEN)
 
-def send_t_update(flight: models.Flight, changes: dict[str, dict[str:str]]):
+
+## Is there a better way to structure these functions to avoid duplicate code?
+
+def send_update(flight, changes, arrived=False):
+    if arrived: 
+        message = (
+            f'Flight {flight.airline_code} {flight.number} has arrived!\n\n'
+            f'Status:\n'
+            f"{changes['status']['updated']}\n\n"
+            'You will no longer receive updates. Thanks for hanging out!'
+        )
+    else:
+        message = _format_update_message(flight, changes)
+
     bot = telegram.Bot(token=credentials.TELEGRAM_TOKEN)
-    message = _format_message(flight, changes)
     bot.send_message(chat_id = credentials.TELEGRAM_ID, text = message)
-    pass
 
 
-def _format_message(flight: models.Flight, changes: dict[str, dict[str:str]]):
-    content = [f'Updates for {flight.airline} flight {flight.airline_code} {flight.number}:\n']
+def _format_update_message(flight: models.Flight, changes: dict[str, dict[str:str]]):
+    content = [f'Update for {flight.airline} flight {flight.airline_code} {flight.number}:\n']
 
     for k, v in changes.items():
         change = k.replace('_', ' ')\

@@ -84,7 +84,7 @@ export default {
       alerts: {
         success: {
           show: false,
-          message: 'Flight tracking successfully registered!'
+          message: 'Success! You will now receive alerts and updates for this flight'
         },
         duplicate: {
           show: false,

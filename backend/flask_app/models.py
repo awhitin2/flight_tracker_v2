@@ -32,7 +32,7 @@ class Flight(db.Model):
     estimated_arrival_time = db.Column(db.String, nullable=False)
     arrival_airport = db.Column(db.String, nullable=False)
     departure_airport = db.Column(db.String, nullable=False)
-    arrived = db.Column(db.Boolean, nullable=True)
+    status = db.Column(db.String, nullable=False)
     followers = db.relationship(
         'User', secondary=user_flight, back_populates = 'flights')
 

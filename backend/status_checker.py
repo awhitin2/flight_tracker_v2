@@ -30,11 +30,10 @@ def _check_for_updates():
         changes = _compare_info(flight, updated_info)
         if changes:
             _process_changes(flight, changes)
-            print(f'send message for {flight.airline_code}{flight.number}')
     print('No changes')
     #Log?
     
-def _compare_info(old_info: models.Flight, updated_info: dict[dict[str:str]])->dict:
+def _compare_info(old_info: models.Flight, updated_info: dict[str: dict[str:str]])->dict:
     changes = {}
     for key, updated_value in updated_info.items():
         old_value = getattr(old_info, key)
@@ -45,14 +44,20 @@ def _compare_info(old_info: models.Flight, updated_info: dict[dict[str:str]])->d
             }
     return changes
 
-def _process_changes(flight: models.Flight, changes: dict[dict[str:str]]):
-    messenger.send_t_update(flight, changes)
-    # my_db.update_flight(flight, changes)
+def _process_changes(flight: models.Flight, changes: dict[str: dict[str:str]]):
+    arrived = _check_arrived(changes)
+    messenger.send_update(flight, changes, arrived)
+    if not arrived:
+        my_db.update_flight(flight, changes)
+    else:
+        my_db.delete_flight(flight)
     
-    #Update database
-    #Delete old records
 
-    pass
+def _check_arrived(changes: dict[str: dict[str:str]]):
+    if 'status' in changes:
+        return 'Arrived' in changes['status']['updated']
+    else:
+        return False
 
 def main():
     _check_for_updates()

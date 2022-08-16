@@ -78,7 +78,8 @@ def _extract_flight_info(soup: bs4.BeautifulSoup)-> dict[str:str]:
             "departure_airport": data[2],
             "scheduled_arrival_time": data[27],
             "estimated_arrival_time": data[29],
-            "arrival_airport": data[4]
+            "arrival_airport": data[4],
+            "status": f'{data[6]}: {data[7]}'
         }
         return flight_info
     raise exceptions.MissingFlight

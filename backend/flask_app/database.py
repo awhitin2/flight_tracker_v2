@@ -1,15 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_app import db, models
 
-# db.drop_all()
-# db.create_all()
-# u1 = User(cell='12312312312', carrier='T-Mobile')
-# u2 = User(cell='22312312312', carrier='T-Mobile')
-# f1 = Flight(number='f188', airline='Frontier')
-# f2 = Flight(number='f198', airline='Frontier')
-# db.session.add_all([u1, u2, f1, f2])
-# db.session.commit()
-
 def get_flight(airline_code:str, number:str, date_str:str)->models.Flight:
     return models.Flight.query.filter_by(airline_code=airline_code)\
                        .filter_by(number=number)\
@@ -34,6 +25,12 @@ def set_flight(
 def update_flight(flight: models.Flight, changes: dict[dict[str:str]])->None:
     for key, value in changes.items():
         setattr(flight, key, value['updated'])
+    db.session.commit()
+
+def delete_flight(flight: models.Flight):
+    for user in flight.followers:
+        user.flights.remove(flight)
+    db.session.delete(flight)
     db.session.commit()
 
 def get_user_(cell:str)->models.User:
