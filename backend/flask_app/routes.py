@@ -1,6 +1,6 @@
 from logging import error
-from flask import request, jsonify
-from flask_app import app, dates, airlines, carriers, tracker
+from flask import request, jsonify, Response
+from flask_app import app, dates, airlines, carriers, tracker, exceptions, httpstatus
 
 
 @app.route('/form', methods=['GET'])
@@ -21,7 +21,10 @@ def register_new():
     form = request.get_json()
     try:
         tracker.register_new_tracking(**form)
-        return "Success"
-    except ValueError as e:
-        return jsonify(str(e))
+        return httpstatus.codes['success']
+    except exceptions.MissingFlight:
+        return  httpstatus.codes['missing']
+    except exceptions.DuplicateTrackingInformation:
+        return  httpstatus.codes['duplicate']
+    
     

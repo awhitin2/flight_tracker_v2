@@ -1,46 +1,53 @@
 import requests
 import bs4
 import datetime
-from flask_app import db, dates, models, airlines
+from flask_app import db, dates, models, airlines, exceptions
 from flask_app import database as my_db
-
 
 
 FLIGHT_STATS_BASE_URL = 'https://www.flightstats.com/v2/flight-tracker'
 FLIGHT_INFO_PATH = 'flight_tracker/flight_info.json'
 
-flight_no = "220"
-date = "08/16/2022"
-airline_code = 'DL'
 
 def register_new_tracking(
-    airline: str, flight_number: str,  date: str, cell: str, carrier: str
-)->str:
+        airline: str, flight_number: str,  date: str, cell: str, carrier: str
+    )->str:
+
+    existing_flight = True
+    existing_user = True
     airline_code = airlines.airline_codes[airline]
     flight = my_db.get_flight(airline_code, flight_number, date)
     if not flight:
+        existing_flight = False
         flight = _register_new_flight(airline_code, flight_number, date)
         db.session.add(flight)
         
     user = my_db.get_user_(cell)
     if not user:
+        existing_user = False
         user = my_db.set_user(cell, carrier)
         db.session.add(user)
 
+    if existing_flight and existing_user:
+        raise exceptions.DuplicateTrackingInformation
+
     user.flights.append(flight)
     db.session.commit()
+    return True
 
-    return("Flight successfully registered")
+def _register_new_flight(airline_code:str, flight_number:str, date:str)->models.Flight:
+    try:
+        soup = _get_soup(airline_code, flight_number, date)
+        flight_info = _extract_flight_info(soup)
+    except exceptions.MissingFlight as e:
+        raise e
 
-def _register_new_flight(airline_code:str, flight_number:str, date_str:str)->models.Flight:
-    soup = _get_soup(airline_code, flight_number, date_str)
-    flight_info = _extract_flight_info(soup)
-    flight = my_db.set_flight(flight_no, airline_code, date, flight_info)
+    flight = my_db.set_flight(flight_number, airline_code, date, flight_info)
     return flight
 
-def _get_soup(airline_code:str, flight_number:str, date_str:str)->bs4.BeautifulSoup:
+def _get_soup(airline_code:str, flight_number:str, date:str)->bs4.BeautifulSoup:
 
-    date_obj = dates.convert_to_date_obj(date_str)
+    date_obj = dates.convert_to_date_obj(date)
 
     url = _format_url(airline_code, flight_number, date_obj)
     data = requests.get(url)
@@ -71,10 +78,8 @@ def _extract_flight_info(soup: bs4.BeautifulSoup)-> dict[str:str]:
             "estimated_arrival_time": data[29],
             "arrival_airport": data[4]
         }
-
         return flight_info
-    else: 
-        raise ValueError('Flight not Found')
+    raise exceptions.MissingFlight
 
 # register_new_tracking(airline_code, flight_no, date, '8189189', 'T-Mobile')
 

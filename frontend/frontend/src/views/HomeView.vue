@@ -9,7 +9,7 @@
       <h1 class='text-light text-center display-1'>Flight Tracker</h1>
       <h3 class='text-light text-center display-5'>Receive instant SMS alerts about flight changes </h3>
     </div>
-    <info-form></info-form>
+    <info-form @responseAlert='showResponseAlert'></info-form>
   </div>
 </template>
 
@@ -22,8 +22,16 @@ export default {
   components: {
     InfoForm
   },
+  data() {
+    return {
+      alerts: {
+        showDismissibleAlert: true
+      }
+    }
+  },
   methods: {
-    submit() {
+    showResponseAlert() {
+      this.showDismissibleAlert = true
     }
   },
 }
