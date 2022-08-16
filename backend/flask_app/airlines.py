@@ -1,4 +1,4 @@
-airlines = {
+airline_codes = {
     'Air Canada': 'AC',
     'Alaska Airlines': 'AS',
     'Allegiant Air': 'G4',

@@ -1,8 +1,9 @@
 import requests
 import bs4
 import datetime
-from flask_app import db, dates, models
+from flask_app import db, dates, models, airlines
 from flask_app import database as my_db
+
 
 
 FLIGHT_STATS_BASE_URL = 'https://www.flightstats.com/v2/flight-tracker'
@@ -13,12 +14,12 @@ date = "08/16/2022"
 airline_code = 'DL'
 
 def register_new_tracking(
-    airline_code: str, flight_number: str,  date_str: str, cell: str, carrier: str
+    airline: str, flight_number: str,  date: str, cell: str, carrier: str
 )->str:
-
-    flight = my_db.get_flight(airline_code, flight_number, date_str)
+    airline_code = airlines.airline_codes[airline]
+    flight = my_db.get_flight(airline_code, flight_number, date)
     if not flight:
-        flight = _register_new_flight(airline_code, flight_number, date_str)
+        flight = _register_new_flight(airline_code, flight_number, date)
         db.session.add(flight)
         
     user = my_db.get_user_(cell)
@@ -60,18 +61,20 @@ def _extract_flight_info(soup: bs4.BeautifulSoup)-> dict[str:str]:
         "div.text-helper__TextHelper-sc-8bko4a-0"))]
     
     status = '' ## Check for arrived status. Send Arrival notification and then stop notifications
+    if data:
+        flight_info = {
+            "airline": data[1],
+            "scheduled_departure_time": data[14],
+            "estimated_departure_time": data[16],
+            "departure_airport": data[2],
+            "scheduled_arrival_time": data[27],
+            "estimated_arrival_time": data[29],
+            "arrival_airport": data[4]
+        }
 
-    flight_info = {
-        "airline": data[1],
-        "scheduled_departure_time": data[14],
-        "estimated_departure_time": data[16],
-        "departure_airport": data[2],
-        "scheduled_arrival_time": data[27],
-        "estimated_arrival_time": data[29],
-        "arrival_airport": data[4]
-    }
-
-    return flight_info
+        return flight_info
+    else: 
+        raise ValueError('Flight not Found')
 
 # register_new_tracking(airline_code, flight_no, date, '8189189', 'T-Mobile')
 

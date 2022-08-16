@@ -14,10 +14,10 @@
           </b-form-group>
         </div>
         <div class='col'>
-          <b-form-group label="Flight Number:" label-for="flightNumber">
+          <b-form-group label="Flight Number:" label-for="flight_number">
             <b-form-input
-              id="flightNumber"
-              v-model="form.flightNumber"
+              id="flight_number"
+              v-model="form.flight_number"
               placeholder="Enter flight number"
               required
             ></b-form-input>
@@ -71,7 +71,7 @@ export default {
     return {
       form: {
         airline: '',
-        flightNumber: '',
+        flight_number: '',
         date: '',
         cell: '',
         carrier: '',
@@ -105,8 +105,14 @@ export default {
       })
     },
     onSubmit() {
-      event.preventDefault();
-      alert(JSON.stringify(this.form))
+      event.preventDefault()
+      const path = 'http://localhost:5000/register-new';
+      axios.post(path, this.form)
+        .then(response => alert(response))
+        .catch(error => {
+          this.errorMessage = error.message;
+          console.error("There was an error!", error);
+        });
     }
   },
   created() {
