@@ -36,14 +36,16 @@ def register_new_tracking(
     return True
 
 def _register_new_flight(airline_code:str, flight_number:str, date:str)->models.Flight:
-    try:
-        soup = _get_soup(airline_code, flight_number, date)
-        flight_info = _extract_flight_info(soup)
-    except exceptions.MissingFlight as e:
-        raise e
-
+    flight_info = get_flight_info(airline_code, flight_number, date)
     flight = my_db.set_flight(flight_number, airline_code, date, flight_info)
     return flight
+
+def get_flight_info(airline_code:str, flight_number:str, date:str)->models.Flight:
+    try:
+        soup = _get_soup(airline_code, flight_number, date)
+        return _extract_flight_info(soup)
+    except exceptions.MissingFlight as e:
+        raise e
 
 def _get_soup(airline_code:str, flight_number:str, date:str)->bs4.BeautifulSoup:
 
