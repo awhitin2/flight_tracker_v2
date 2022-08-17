@@ -58,16 +58,6 @@
             ></b-form-input>
           </b-form-group>
         </div>
-        <div class='col'>
-          <b-form-group label='Carrier' label-for='carrier' >
-            <b-form-select 
-            :options= 'carriers' 
-            v-model='form.carrier' 
-            id='carrier'
-            required
-          ></b-form-select>
-          </b-form-group>
-        </div>
       </div>
       <button type="submit" class="btn btn-block btn-primary">Submit</button>
     </b-form>
@@ -106,7 +96,6 @@ export default {
         cell: '',
         carrier: '',
       },
-      carriers: [],
       airlines: [],
       dates: []
     }
@@ -116,7 +105,6 @@ export default {
       const path = 'http://localhost:5000/form';
       axios.get(path)
       .then((res) => {
-        this.carriers = res.data.carriers;
         this.dates = res.data.dates
         this.airlines = res.data.airlines
       })

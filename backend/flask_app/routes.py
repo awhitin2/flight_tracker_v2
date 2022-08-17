@@ -1,6 +1,6 @@
-from flask import request
+from flask import abort, request
 from flask_app import (
-    app, dates, airlines, carriers, tracker, exceptions, httpstatus, messenger
+    app, dates, airlines, tracker, exceptions, httpstatus, messenger
 )
 
 
@@ -8,10 +8,8 @@ from flask_app import (
 def get_form_start_data():
     date_options = dates.get_date_options()
     airline_options = list(airlines.airline_codes)
-    carrier_options = list(carriers.carrier_codes)
     return(
         {
-            'carriers': carrier_options,
             'dates' : date_options,
             'airlines' : airline_options
         })
@@ -27,6 +25,7 @@ def register_new():
     except exceptions.DuplicateTrackingInformation:
         return  httpstatus.codes['duplicate']
     except Exception as e:
-        messenger.send(e)
+        messenger.send_telegram(str(e))
+        return abort()
     
     

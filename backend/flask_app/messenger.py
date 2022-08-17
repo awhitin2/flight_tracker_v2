@@ -1,19 +1,19 @@
-from flask_app import credentials
-import yagmail
-
-from flask_app import models
-from flask_app.carriers import carrier_codes
-
-yag = yagmail.SMTP(credentials.EMAIL_ACCOUNT, credentials.EMAIL_PASSWORD)
-
-
 import telegram
-bot = telegram.Bot(token=credentials.TELEGRAM_TOKEN)
+from twilio.rest import Client
+from flask_app import credentials, models, dates
 
 
-def send_update(flight, changes, arrived=False)->None:
-    message = _format_update_message(flight, changes)
-    send(message)
+
+account_sid = credentials.TWILIO_SSID
+auth_token = credentials.TWILIO_AUTH_TOKEN
+client = Client(account_sid, auth_token)
+
+TWILIO_NUMBER = '+16672222362'
+
+
+def send_update(flight:models.Flight, changes)->None:
+    body = _format_update_message(flight, changes)
+    _send_sms(flight, body)
 
 def _format_update_message(flight: models.Flight, changes: dict[str, dict[str:str]]):
     content = [f'Update for {flight.airline} flight {flight.airline_code} {flight.number}:\n']
@@ -28,39 +28,43 @@ def _format_update_message(flight: models.Flight, changes: dict[str, dict[str:st
     return '\n'.join(content)
 
 def send_arrived(flight: models.Flight, changes: dict[str, dict[str:str]])->None:
-    message = (
+    body = (
             f'Flight {flight.airline_code} {flight.number} has arrived!\n\n'
             f'Status:\n'
-            f"{changes['status']['updated']}\n\n"
+            f"{_format_arrival_status(flight, changes)}\n\n"
             'You will no longer receive updates. Thanks for hanging out!'
         )
-    send(message)
+    _send_sms(flight, body)
+
+def _format_arrival_status(flight: models.Flight, changes: dict[str, dict[str:str]]):
+    scheduled = flight.scheduled_arrival_time
+    actual = changes['estimated_arrival_time']['updated']
+    delayed, hours, minutes = dates.calculate_arrival_delta(scheduled, actual)
+    status = 'behind schedule' if delayed else 'ahead of schedule'
+    hours_str = f'{str(int(hours))} hours, ' if hours else ''
+    minutes_str = f'{str(int(minutes))} minutes' if minutes else ''
+
+    return f'Arrived {hours_str}{minutes_str} {status}'
+
 
 def send_registration_confirmation(user: models.User, flight: models.Flight)->None:
-    message = (
+    body = (
         f'Welcome to Flight Tracker! You will now recieve notifications for any '
         f'changes to {flight.airline} flight {flight.airline_code} {flight.number} '
         f'departing on {flight.date_str}'
     )
-    send(message)
+    _send_sms(flight, body, recipient = user)
 
-def send(message):
+# I dont' like this
+
+def _send_sms(flight: models.Flight, body: str, recipient = None):
+    if recipient:
+        client.messages.create(to = '+1'+recipient.cell, body=body, from_=TWILIO_NUMBER)
+    else:
+        for recipient in flight.followers:
+            client.messages.create(to = '+1'+recipient.cell, body=body, from_=TWILIO_NUMBER)
+    
+
+def send_telegram(body: str):
     bot = telegram.Bot(token=credentials.TELEGRAM_TOKEN)
-    bot.send_message(chat_id = credentials.TELEGRAM_ID, text = message)
-
-
-# def send_update_sms(
-#     users: list[models.User], 
-#     flight: models.Flight, 
-#     changes: dict[str, dict[str:str]]
-#     )->None:
-   
-#     to = _construct_recipient_addresses(users)
-#     subject = 'Flight Tracker Update'
-#     message = Message(flight, changes)
-
-#     yag.send(to, subject, contents = message.body)
-
-def _construct_recipient_addresses(users: models.User):
-    # return [f'{user.cell}{carrier_codes[user.carrier]}' for user in users]
-    return f"{'2407500944'}{'@msg.fi.google.com'}"
+    bot.send_message(chat_id = credentials.TELEGRAM_ID, text = body)

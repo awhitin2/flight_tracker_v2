@@ -10,7 +10,6 @@ user_flight = db.Table('user_flight',
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     cell = db.Column(db.String, unique=True, nullable=False)
-    carrier = db.Column(db.String, unique=False, nullable=False)
     flights = db.relationship(
         'Flight', secondary=user_flight, back_populates = 'followers'
     )

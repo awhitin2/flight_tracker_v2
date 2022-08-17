@@ -135,3 +135,4 @@ dmypy.json
 # Project specific
 backend/flask_app/site.db
 backend/flask_app/credentials.py
+backend/flask_app/log.txt

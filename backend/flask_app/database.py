@@ -37,5 +37,5 @@ def get_user_(cell:str)->models.User:
     return models.User.query.filter_by(cell=cell).first()
 
 def set_user(cell:str, carrier:str)->models.User:
-    return models.User(cell = cell, carrier = carrier)
+    return models.User(cell = cell)
 
