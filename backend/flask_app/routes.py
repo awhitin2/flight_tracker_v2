@@ -1,6 +1,7 @@
-from logging import error
-from flask import request, jsonify, Response
-from flask_app import app, dates, airlines, carriers, tracker, exceptions, httpstatus
+from flask import request
+from flask_app import (
+    app, dates, airlines, carriers, tracker, exceptions, httpstatus, messenger
+)
 
 
 @app.route('/form', methods=['GET'])
@@ -15,7 +16,6 @@ def get_form_start_data():
             'airlines' : airline_options
         })
 
-
 @app.route('/register-new', methods=['POST'])
 def register_new():
     form = request.get_json()
@@ -26,5 +26,7 @@ def register_new():
         return  httpstatus.codes['missing']
     except exceptions.DuplicateTrackingInformation:
         return  httpstatus.codes['duplicate']
+    except Exception as e:
+        messenger.send(e)
     
     

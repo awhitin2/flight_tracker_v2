@@ -1,7 +1,7 @@
 import requests
 import bs4
 import datetime
-from flask_app import db, dates, models, airlines, exceptions
+from flask_app import db, dates, models, airlines, exceptions, messenger
 from flask_app import database as my_db
 
 
@@ -11,11 +11,12 @@ FLIGHT_INFO_PATH = 'flight_tracker/flight_info.json'
 
 def register_new_tracking(
         airline: str, flight_number: str,  date: str, cell: str, carrier: str
-    )->str:
+    )->None:
 
     existing_flight = True
     existing_user = True
     airline_code = airlines.airline_codes[airline]
+
     flight = my_db.get_flight(airline_code, flight_number, date)
     if not flight:
         existing_flight = False
@@ -33,14 +34,14 @@ def register_new_tracking(
 
     user.flights.append(flight)
     db.session.commit()
-    return True
+    messenger.send_registration_confirmation(user, flight)
 
 def _register_new_flight(airline_code:str, flight_number:str, date:str)->models.Flight:
     flight_info = get_flight_info(airline_code, flight_number, date)
     flight = my_db.set_flight(flight_number, airline_code, date, flight_info)
     return flight
 
-def get_flight_info(airline_code:str, flight_number:str, date:str)->models.Flight:
+def get_flight_info(airline_code:str, flight_number:str, date:str)->dict[str:str]:
     try:
         soup = _get_soup(airline_code, flight_number, date)
         return _extract_flight_info(soup)

@@ -1,20 +1,10 @@
 
-# Checker
-## Get list of flights from database
-## Check for any changed info and message
-## Delete old flights
-
-# Messager
-## Confirmation when registered
-## Any status changes
-## Boarding/departure
-## Arrival
-
 from flask_app import tracker, models, exceptions, messenger
 from flask_app import database as my_db
 
 
-def _check_for_updates():
+
+def check_for_updates():
     flights = my_db.get_all_flights()
     for flight in flights:
         try:
@@ -30,7 +20,6 @@ def _check_for_updates():
         changes = _compare_info(flight, updated_info)
         if changes:
             _process_changes(flight, changes)
-    print('No changes')
     #Log?
     
 def _compare_info(old_info: models.Flight, updated_info: dict[str: dict[str:str]])->dict:
@@ -46,11 +35,12 @@ def _compare_info(old_info: models.Flight, updated_info: dict[str: dict[str:str]
 
 def _process_changes(flight: models.Flight, changes: dict[str: dict[str:str]]):
     arrived = _check_arrived(changes)
-    messenger.send_update(flight, changes, arrived)
-    if not arrived:
-        my_db.update_flight(flight, changes)
-    else:
+    if arrived:
+        messenger.send_arrived(flight, changes)
         my_db.delete_flight(flight)
+    else:
+        messenger.send_update(flight, changes, arrived)
+        my_db.update_flight(flight, changes)
     
 
 def _check_arrived(changes: dict[str: dict[str:str]]):
@@ -59,8 +49,8 @@ def _check_arrived(changes: dict[str: dict[str:str]]):
     else:
         return False
 
-def main():
-    _check_for_updates()
+def main():    
+    check_for_updates()
 
 if __name__ == '__main__':
     main()

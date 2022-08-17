@@ -11,22 +11,9 @@ import telegram
 bot = telegram.Bot(token=credentials.TELEGRAM_TOKEN)
 
 
-## Is there a better way to structure these functions to avoid duplicate code?
-
-def send_update(flight, changes, arrived=False):
-    if arrived: 
-        message = (
-            f'Flight {flight.airline_code} {flight.number} has arrived!\n\n'
-            f'Status:\n'
-            f"{changes['status']['updated']}\n\n"
-            'You will no longer receive updates. Thanks for hanging out!'
-        )
-    else:
-        message = _format_update_message(flight, changes)
-
-    bot = telegram.Bot(token=credentials.TELEGRAM_TOKEN)
-    bot.send_message(chat_id = credentials.TELEGRAM_ID, text = message)
-
+def send_update(flight, changes, arrived=False)->None:
+    message = _format_update_message(flight, changes)
+    send(message)
 
 def _format_update_message(flight: models.Flight, changes: dict[str, dict[str:str]]):
     content = [f'Update for {flight.airline} flight {flight.airline_code} {flight.number}:\n']
@@ -39,6 +26,27 @@ def _format_update_message(flight: models.Flight, changes: dict[str, dict[str:st
             f"Previous: {v['old']} --> Updated: {v['updated']}\n"
         ])
     return '\n'.join(content)
+
+def send_arrived(flight: models.Flight, changes: dict[str, dict[str:str]])->None:
+    message = (
+            f'Flight {flight.airline_code} {flight.number} has arrived!\n\n'
+            f'Status:\n'
+            f"{changes['status']['updated']}\n\n"
+            'You will no longer receive updates. Thanks for hanging out!'
+        )
+    send(message)
+
+def send_registration_confirmation(user: models.User, flight: models.Flight)->None:
+    message = (
+        f'Welcome to Flight Tracker! You will now recieve notifications for any '
+        f'changes to {flight.airline} flight {flight.airline_code} {flight.number} '
+        f'departing on {flight.date_str}'
+    )
+    send(message)
+
+def send(message):
+    bot = telegram.Bot(token=credentials.TELEGRAM_TOKEN)
+    bot.send_message(chat_id = credentials.TELEGRAM_ID, text = message)
 
 
 # def send_update_sms(
