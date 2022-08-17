@@ -84,20 +84,19 @@ export default {
       alerts: {
         success: {
           show: false,
-          message: 'Success! You will now receive alerts and updates for this flight'
+          message: ('Success! You will now receive alerts and updates for this flight. Expect a confirmation SMS shortly.')
         },
         duplicate: {
           show: false,
-          message: 'This cell number is already tracking this flight'
+          message: 'Tracking alerts for this flight are already registered to this cell.'
         },
         missing: {
           show: false,
-          message: 'Could not find any flights matching the given details'
+          message: 'Could not find any flights matching the given details.'
         },
         invalidCell: {
           show: false,
-          message: ('Please enter a valid U.S. cell number \
-                    in the following format: xxx-xxx-xxxx')
+          message: ('Please enter a valid U.S. cell number in the following format: xxx-xxx-xxxx.')
         }
       },
       form: {
@@ -107,19 +106,9 @@ export default {
         cell: '',
         carrier: '',
       },
-      carriers: [
-        'Verizon',
-      ],
-      airlines: [
-        'Frontier',
-        'Delta',
-        'American',
-      ],
-      dates: [
-        '10/10/22',
-        '10/12/22',
-        '10/14/22'
-      ]
+      carriers: [],
+      airlines: [],
+      dates: []
     }
   },
   methods: {

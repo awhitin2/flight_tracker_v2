@@ -3,7 +3,6 @@ from flask_app import tracker, models, exceptions, messenger
 from flask_app import database as my_db
 
 
-
 def check_for_updates():
     flights = my_db.get_all_flights()
     for flight in flights:
