@@ -134,4 +134,4 @@ dmypy.json
 
 # Project specific
 backend/flask_app/site.db
-backend/email_credentials.py
+backend/flask_app/credentials.py
