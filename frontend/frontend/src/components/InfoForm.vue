@@ -94,10 +94,9 @@ export default {
         flight_number: '',
         date: '',
         cell: '',
-        carrier: '',
       },
-      airlines: [],
-      dates: []
+      airlines: [{ text: 'Select One', value: null },],
+      dates: [{ text: 'Select One', value: null },]
     }
   },
   methods: {
@@ -105,8 +104,8 @@ export default {
       const path = 'http://localhost:5000/form';
       axios.get(path)
       .then((res) => {
-        this.dates = res.data.dates
-        this.airlines = res.data.airlines
+        this.airlines.push(...res.data.airlines);
+        this.dates.push(...res.data.dates);
       })
       .catch((err)=> {
         console.error(err)
@@ -114,14 +113,28 @@ export default {
     },
     onSubmit() {
       event.preventDefault()
+      for (alert in this.alerts) {
+        this.alerts[alert].show = false
+      }
       const path = 'http://localhost:5000/register-new';
       axios.post(path, this.form)
-        .then(response => this.alerts[response.data].show = true)
+        .then(response => this.conditionalFormReset(response))
+        .then(response => this.alerts[response.data].show = 5)
         .catch(error => {
           this.errorMessage = error.message;
           console.error("There was an error!", error.data);
         });
-    }
+    },
+    conditionalFormReset(response) {
+      if (response.data == 'success') {
+        this.form.airline = { text: 'Select One', value: null }
+        this.form.date = { text: 'Select One', value: null }
+        this.form.cell = '';
+        this.form.flight_number = '';
+      };
+      console.log(response.data)
+      return Promise.resolve(response)
+    },
   },
   created() {
     this.getFormStartData()

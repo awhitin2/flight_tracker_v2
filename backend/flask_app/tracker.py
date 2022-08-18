@@ -10,7 +10,7 @@ FLIGHT_INFO_PATH = 'flight_tracker/flight_info.json'
 
 
 def register_new_tracking(
-        airline: str, flight_number: str,  date: str, cell: str, carrier: str
+        airline: str, flight_number: str,  date: str, cell: str
     )->None:
 
     existing_flight = True
@@ -26,7 +26,7 @@ def register_new_tracking(
     user = my_db.get_user_(cell)
     if not user:
         existing_user = False
-        user = my_db.set_user(cell, carrier)
+        user = my_db.set_user(cell)
         db.session.add(user)
 
     if existing_flight and existing_user:

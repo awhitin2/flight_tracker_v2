@@ -26,6 +26,6 @@ def register_new():
         return  httpstatus.codes['duplicate']
     except Exception as e:
         messenger.send_telegram(str(e))
-        return abort()
+        return abort(404)
     
     
