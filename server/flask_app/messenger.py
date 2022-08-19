@@ -58,11 +58,14 @@ def send_registration_confirmation(user: models.User, flight: models.Flight)->No
 # I dont' like this
 
 def _send_sms(flight: models.Flight, body: str, recipient = None):
-    if recipient:
-        client.messages.create(to = '+1'+recipient.cell, body=body, from_=TWILIO_NUMBER)
-    else:
-        for recipient in flight.followers:
+    try:
+        if recipient:
             client.messages.create(to = '+1'+recipient.cell, body=body, from_=TWILIO_NUMBER)
+        else:
+            for recipient in flight.followers:
+                client.messages.create(to = '+1'+recipient.cell, body=body, from_=TWILIO_NUMBER)
+    except KeyError as e:
+        send_telegram(e)
     
 
 def send_telegram(body: str):
