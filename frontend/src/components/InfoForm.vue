@@ -119,7 +119,7 @@ export default {
       const path = 'http://localhost:5000/register-new';
       axios.post(path, this.form)
         .then(response => this.conditionalFormReset(response))
-        .then(response => this.alerts[response.data].show = 5)
+        .then(response => this.alerts[response.data].show = true)
         .catch(error => {
           this.errorMessage = error.message;
           console.error("There was an error!", error.data);

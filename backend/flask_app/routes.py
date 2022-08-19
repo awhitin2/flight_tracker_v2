@@ -1,7 +1,13 @@
-from flask import abort, request
+from flask import abort, render_template, request
 from flask_app import (
     app, dates, airlines, tracker, exceptions, httpstatus, messenger
 )
+
+
+
+@app.route('/', methods=['GET'])
+def index():
+    return render_template('index.html')
 
 
 @app.route('/form', methods=['GET'])
