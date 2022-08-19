@@ -10,7 +10,7 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/form', methods=['GET'])
+@app.route('/api/form', methods=['GET'])
 def get_form_start_data():
     date_options = dates.get_date_options()
     airline_options = list(airlines.airline_codes)
@@ -20,7 +20,7 @@ def get_form_start_data():
             'airlines' : airline_options
         })
 
-@app.route('/register-new', methods=['POST'])
+@app.route('/api/register-new', methods=['POST'])
 def register_new():
     form = request.get_json()
     try:

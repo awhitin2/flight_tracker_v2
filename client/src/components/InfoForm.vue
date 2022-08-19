@@ -101,7 +101,7 @@ export default {
   },
   methods: {
     getFormStartData() {
-      const path = 'http://localhost:5000/form';
+      const path = 'http://localhost:5000/api/form';
       axios.get(path)
       .then((res) => {
         this.airlines.push(...res.data.airlines);
@@ -116,7 +116,7 @@ export default {
       for (alert in this.alerts) {
         this.alerts[alert].show = false
       }
-      const path = 'http://localhost:5000/register-new';
+      const path = 'http://localhost:5000/api/register-new';
       axios.post(path, this.form)
         .then(response => this.conditionalFormReset(response))
         .then(response => this.alerts[response.data].show = true)
