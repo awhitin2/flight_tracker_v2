@@ -1,6 +1,8 @@
 import requests
 import bs4
 import datetime
+
+from sqlalchemy import false
 from flask_app import db, dates, models, airlines, exceptions, messenger
 from flask_app import database as my_db
 
@@ -12,6 +14,9 @@ FLIGHT_INFO_PATH = 'flight_tracker/flight_info.json'
 def register_new_tracking(
         airline: str, flight_number: str,  date: str, cell: str
     )->None:
+
+    if not _cell_is_softly_validated(cell):
+        raise exceptions.InvalidCell
 
     existing_flight = True
     existing_user = True
@@ -35,6 +40,13 @@ def register_new_tracking(
     user.flights.append(flight)
     db.session.commit()
     messenger.send_registration_confirmation(user, flight)
+
+def _cell_is_softly_validated(cell: str):
+    cell = ''.join([c for c in cell if c in '0123456789'])
+    if len(cell) != 10:
+        return False
+    return True
+
 
 def _register_new_flight(airline_code:str, flight_number:str, date:str)->models.Flight:
     flight_info = get_flight_info(airline_code, flight_number, date)

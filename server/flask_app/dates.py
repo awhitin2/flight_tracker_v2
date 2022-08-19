@@ -15,7 +15,7 @@ def calculate_arrival_delta(scheduled: str, actual: str)->tuple:
     delta = scheduled-actual
     minutes = delta.total_seconds()/60
     delayed = minutes < 0
-    hours, minutes = divmod(minutes, 60)
+    hours, minutes = divmod(abs(minutes), 60)
     return delayed, hours, minutes
 
 def convert_to_str(date_obj):
@@ -23,5 +23,3 @@ def convert_to_str(date_obj):
 
 def convert_to_date_obj(date_str):
     return datetime.datetime.strptime(date_str,'%m/%d/%Y')
-
-calculate_arrival_delta('14:49 MDT', '15:49 MDT')

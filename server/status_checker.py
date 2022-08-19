@@ -25,10 +25,10 @@ def check_for_updates():
         
     print(f"Script ran at {datetime.now()} and found {change_count} changes")
     if change_count:
-        with open('backend/flask_app/log.txt', 'a') as file:
+        with open('flask_app/log.txt', 'a') as file:
             file.write(
                 (f'{datetime.now()} -- status_checker checked\n' 
-                f'{flight_count} flights and found {change_count} changes')
+                f'{flight_count} flights and found {change_count} change(s)')
             )
     
 def _compare_info(old_info: models.Flight, updated_info: dict[str: dict[str:str]])->dict:

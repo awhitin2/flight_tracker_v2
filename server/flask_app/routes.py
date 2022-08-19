@@ -30,6 +30,8 @@ def register_new():
         return  httpstatus.codes['missing']
     except exceptions.DuplicateTrackingInformation:
         return  httpstatus.codes['duplicate']
+    except exceptions.InvalidCell:
+        return httpstatus.codes['invalidCell']
     except Exception as e:
         messenger.send_telegram(str(e))
         return abort(404)
