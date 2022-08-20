@@ -4,10 +4,10 @@ from flask_app import (
 )
 
 
-
-@app.route('/', methods=['GET'])
-def index():
-    return render_template('index.html')
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    return app.send_static_file("index.html")
 
 
 @app.route('/api/form', methods=['GET'])

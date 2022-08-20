@@ -1,2 +1,11 @@
-Flask == 2.0.1 
-Flask-Cors == 3.0.10
+bs4==0.0.1
+flask-cors==3.0.10
+flask-sqlalchemy==2.5.1
+jmespath==1.0.1
+pip-chill==1.0.1
+premailer==3.10.0
+python-dateutil==2.8.2
+python-dotenv==0.20.0
+python-telegram-bot==13.13
+s3transfer==0.6.0
+twilio==7.12.1
